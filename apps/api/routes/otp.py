@@ -18,11 +18,11 @@ Security properties
   revoked if needed.
 * Attempt counting and automatic locking prevent online brute-force.
 * Rate limiting is applied at five tiers:
-    1. Global IP              – 60/min
-    2. Project + IP           – 30/min
-    3. Project + email        – 5/hour
-    4. Project global         – 1 000/hour
-    5. Sandbox per-project    – 20/hour  (sandbox keys only)
+    1. Global IP              - 60/min
+    2. Project + IP           - 30/min
+    3. Project + email        - 5/hour
+    4. Project global         - 1 000/hour
+    5. Sandbox per-project    - 20/hour  (sandbox keys only)
 """
 
 from __future__ import annotations
@@ -31,7 +31,7 @@ import asyncio
 import logging
 import time
 import uuid
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from typing import Any
 
 from arq import create_pool
@@ -116,7 +116,7 @@ class OtpVerifyResponse(BaseModel):
 
 def _make_jwt(project_id: str, email_hash: str, otp_record_id: str) -> str:
     """Issue a short-lived JWT for the verified email session."""
-    now = datetime.now(tz=timezone.utc)
+    now = datetime.now(tz=UTC)
     expiry = now + timedelta(minutes=settings.JWT_EXPIRY_MINUTES)
     payload = {
         "sub": email_hash,
@@ -231,7 +231,7 @@ async def send_otp(
     otp: str = generate_otp(otp_length)
     otp_hash: str = hash_otp(otp)
 
-    expires_at = datetime.now(tz=timezone.utc) + timedelta(seconds=otp_expiry_seconds)
+    expires_at = datetime.now(tz=UTC) + timedelta(seconds=otp_expiry_seconds)
 
     # ── Persist OTP record ────────────────────────────────────────────────────
     record_id: str = str(uuid.uuid4())
@@ -302,10 +302,10 @@ async def verify_otp_endpoint(
     """
     Verify the supplied OTP code.
 
-    * ``200`` – code is correct → returns a short-lived JWT.
-    * ``400`` – code is wrong (attempts incremented).
-    * ``410`` – OTP has expired or was already verified/invalidated.
-    * ``423`` – OTP is locked after too many failed attempts.
+    * ``200`` - code is correct → returns a short-lived JWT.
+    * ``400`` - code is wrong (attempts incremented).
+    * ``410`` - OTP has expired or was already verified/invalidated.
+    * ``423`` - OTP is locked after too many failed attempts.
     """
     start_time: float = time.monotonic()
 
@@ -349,7 +349,7 @@ async def verify_otp_endpoint(
 
     # ── Check expiry ──────────────────────────────────────────────────────────
     expires_at = datetime.fromisoformat(record["expires_at"].replace("Z", "+00:00"))
-    if datetime.now(tz=timezone.utc) > expires_at:
+    if datetime.now(tz=UTC) > expires_at:
         await _anti_enum_sleep(start_time)
         raise HTTPException(
             status_code=status.HTTP_410_GONE,

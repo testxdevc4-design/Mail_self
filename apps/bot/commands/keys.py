@@ -5,10 +5,10 @@ Telegram bot commands for managing API keys.
 
 Commands
 --------
-/genkey <project_slug>   – Generate a new API key (plaintext shown once).
-/keys <project_slug>     – List all keys for a project (prefix + status only).
-/revokekey <key_prefix>  – Revoke a key by its prefix.
-/testkey <key>           – Test whether a key is valid and show its project.
+/genkey <project_slug>   - Generate a new API key (plaintext shown once).
+/keys <project_slug>     - List all keys for a project (prefix + status only).
+/revokekey <key_prefix>  - Revoke a key by its prefix.
+/testkey <key>           - Test whether a key is valid and show its project.
 
 Security notes
 --------------
@@ -91,7 +91,10 @@ async def cmd_gen_key(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
         return
 
     if not proj_resp.data:
-        await update.message.reply_text(f"❌ Project `{project_slug}` not found.", parse_mode="Markdown")
+        await update.message.reply_text(
+            f"❌ Project `{project_slug}` not found.",
+            parse_mode="Markdown",
+        )
         return
 
     project: dict[str, Any] = proj_resp.data[0]
@@ -120,7 +123,7 @@ async def cmd_gen_key(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
     key_type = "🔵 SANDBOX" if is_sandbox else "🟢 LIVE"
     await update.message.reply_text(
         f"✅ API key generated for *{project['name']}* ({key_type})\n\n"
-        f"Copy this key – *it will NOT be shown again*:\n\n"
+        f"Copy this key - *it will NOT be shown again*:\n\n"
         f"`{plaintext}`\n\n"
         f"Key prefix: `{key_prefix}`",
         parse_mode="Markdown",
@@ -129,7 +132,7 @@ async def cmd_gen_key(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
 
 async def cmd_list_keys(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """
-    /keys <project_slug> – List all API keys for a project (prefix only).
+    /keys <project_slug> - List all API keys for a project (prefix only).
     """
     if not await check_admin(update, context):
         return
@@ -156,7 +159,10 @@ async def cmd_list_keys(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
         return
 
     if not proj_resp.data:
-        await update.message.reply_text(f"❌ Project `{project_slug}` not found.", parse_mode="Markdown")
+        await update.message.reply_text(
+            f"❌ Project `{project_slug}` not found.",
+            parse_mode="Markdown",
+        )
         return
 
     project: dict[str, Any] = proj_resp.data[0]
@@ -183,7 +189,7 @@ async def cmd_list_keys(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
         )
         return
 
-    lines: list[str] = [f"*API Keys – {project['name']}*\n"]
+    lines: list[str] = [f"*API Keys - {project['name']}*\n"]
     for row in rows:
         active_icon = "🟢" if row["is_active"] else "🔴"
         sandbox_tag = " [sandbox]" if row["is_sandbox"] else ""
@@ -200,7 +206,7 @@ async def cmd_list_keys(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
 
 async def cmd_revoke_key(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """
-    /revokekey <key_prefix> – Revoke an API key by its prefix.
+    /revokekey <key_prefix> - Revoke an API key by its prefix.
     """
     if not await check_admin(update, context):
         return
@@ -255,7 +261,7 @@ async def cmd_revoke_key(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
 
 async def cmd_test_key(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """
-    /testkey <key> – Validate an API key and show its project details.
+    /testkey <key> - Validate an API key and show its project details.
     """
     if not await check_admin(update, context):
         return

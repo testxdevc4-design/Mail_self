@@ -4,14 +4,13 @@ apps/bot/middleware/admin_gate.py
 Admin access guard for the Telegram management bot.
 
 Only the single ``TELEGRAM_ADMIN_UID`` configured in settings may interact
-with the bot.  All other users are silently dropped – no error message is
+with the bot.  All other users are silently dropped - no error message is
 sent back so the bot's existence remains opaque to unauthorised users.
 """
 
 from __future__ import annotations
 
 import logging
-from typing import Any
 
 from telegram import Update
 from telegram.ext import ContextTypes
@@ -30,8 +29,8 @@ async def check_admin(update: Update, context: ContextTypes.DEFAULT_TYPE) -> boo
         context: PTB application context (unused but required by filter signature).
 
     Returns:
-        ``True``  – user is the configured admin; handler should proceed.
-        ``False`` – user is not the admin; handler should abort silently.
+        ``True``  - user is the configured admin; handler should proceed.
+        ``False`` - user is not the admin; handler should abort silently.
     """
     user = update.effective_user
     if user is None:

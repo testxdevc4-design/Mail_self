@@ -58,7 +58,7 @@ def _slugify(name: str) -> str:
 
 
 async def start_new_project(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    """/newproject – Start the new-project wizard."""
+    """/newproject - Start the new-project wizard."""
     if not await check_admin(update, context):
         return ConversationHandler.END
 
@@ -88,7 +88,7 @@ async def got_name(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
 
     await update.message.reply_text(
         f"✅ Name: *{name}*\n\n"
-        f"🆕 *Step 2/5* – Enter a URL slug for this project.\n"
+        f"🆕 *Step 2/5* - Enter a URL slug for this project.\n"
         f"Suggested: `{suggested_slug}`\n\n"
         "The slug must be lowercase letters, numbers, and hyphens only.\n"
         "_Send the suggested slug or type your own._",
@@ -162,11 +162,11 @@ async def got_slug(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
 
     context.user_data["available_senders"] = [r["email_address"] for r in sender_rows]
     keyboard = [[r["email_address"]] for r in sender_rows]
-    keyboard.append(["(none – assign later)"])
+    keyboard.append(["(none - assign later)"])
 
     await update.message.reply_text(
         f"✅ Slug: `{slug}`\n\n"
-        "🆕 *Step 3/5* – Select a sender email for this project:",
+        "🆕 *Step 3/5* - Select a sender email for this project:",
         parse_mode="Markdown",
         reply_markup=ReplyKeyboardMarkup(
             keyboard,
@@ -181,7 +181,7 @@ async def got_sender(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     """Receive the sender selection."""
     selection: str = update.message.text.strip()
 
-    if selection == "(none – assign later)":
+    if selection == "(none - assign later)":
         context.user_data["sender_email"] = None
     elif selection in context.user_data.get("available_senders", []):
         context.user_data["sender_email"] = selection
@@ -192,7 +192,7 @@ async def got_sender(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
         return ASK_SENDER
 
     await update.message.reply_text(
-        "🆕 *Step 4/5* – OTP length\n\n"
+        "🆕 *Step 4/5* - OTP length\n\n"
         "How many digits should the OTP be?",
         parse_mode="Markdown",
         reply_markup=ReplyKeyboardMarkup(
@@ -215,7 +215,7 @@ async def got_otp_length(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
 
     expiry_keyboard = [["60", "120", "300"], ["600", "900", "1800"]]
     await update.message.reply_text(
-        "🆕 *Step 5/5* – OTP expiry in seconds\n\n"
+        "🆕 *Step 5/5* - OTP expiry in seconds\n\n"
         "How long should each OTP be valid?",
         parse_mode="Markdown",
         reply_markup=ReplyKeyboardMarkup(

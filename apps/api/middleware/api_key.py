@@ -11,7 +11,7 @@ Flow
 4. Verify the key is active and fetch the associated project record.
 5. Return a ``ValidatedKey`` data class that routes can use directly.
 
-The plaintext key is **never** stored in the database – only its SHA-256
+The plaintext key is **never** stored in the database - only its SHA-256
 hex digest is persisted, so a database breach does not expose live keys.
 """
 
@@ -22,7 +22,7 @@ import logging
 from dataclasses import dataclass
 from typing import Any
 
-from fastapi import Depends, HTTPException, Request, Security, status
+from fastapi import HTTPException, Request, Security, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
 from core.config import settings
@@ -31,6 +31,10 @@ from core.db import get_client
 logger = logging.getLogger(__name__)
 
 _bearer_scheme = HTTPBearer(auto_error=False)
+
+# Module-level set to prevent garbage collection of fire-and-forget asyncio tasks.
+# Tasks are added here and automatically removed via done callbacks.
+_background_tasks: set[Any] = set()
 
 
 @dataclass(frozen=True, slots=True)
@@ -170,7 +174,7 @@ async def get_api_key(
     # ── Update last_used_at asynchronously (fire-and-forget) ──────────────────
     # We intentionally do not await this to keep response latency low.
     # asyncio.create_task is preferred over ensure_future (Python 3.7+).
-    import asyncio  # noqa: PLC0415
+    import asyncio
 
     async def _update_last_used() -> None:
         try:
@@ -183,7 +187,9 @@ async def get_api_key(
         except Exception:
             pass  # Non-critical; never block the request path
 
-    asyncio.create_task(_update_last_used())
+    task = asyncio.create_task(_update_last_used())
+    _background_tasks.add(task)
+    task.add_done_callback(_background_tasks.discard)
 
     return ValidatedKey(
         key_id=key_row["id"],

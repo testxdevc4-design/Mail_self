@@ -5,10 +5,10 @@ Telegram bot commands for viewing email delivery logs.
 
 Commands
 --------
-/logs                   – Show the 10 most recent logs across all projects.
-/logs <slug>            – Show the 10 most recent logs for a project.
-/logs --failed          – Show the 10 most recent failed deliveries.
-/logs --today           – Show all logs from today (UTC).
+/logs                   - Show the 10 most recent logs across all projects.
+/logs <slug>            - Show the 10 most recent logs for a project.
+/logs --failed          - Show the 10 most recent failed deliveries.
+/logs --today           - Show all logs from today (UTC).
 
 Usage is parsed from ``context.args`` so all four forms are handled by a
 single command handler.
@@ -17,7 +17,7 @@ single command handler.
 from __future__ import annotations
 
 import logging
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 
 from telegram import Update
@@ -64,7 +64,7 @@ async def cmd_logs(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         title_suffix = "Failed Deliveries"
 
     elif args and args[0] == "--today":
-        today_start = datetime.now(tz=timezone.utc).replace(
+        today_start = datetime.now(tz=UTC).replace(
             hour=0, minute=0, second=0, microsecond=0
         ).isoformat()
         query = query.gte("created_at", today_start)
@@ -94,7 +94,7 @@ async def cmd_logs(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
         project: dict[str, Any] = proj_resp.data[0]
         query = query.eq("project_id", project["id"])
-        title_suffix = f"Logs – {project['name']}"
+        title_suffix = f"Logs - {project['name']}"
 
     try:
         response = (
@@ -123,7 +123,7 @@ async def cmd_logs(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         if row["status"] == "failed" and row.get("error_message"):
             error_snippet = f"\n    ⚠️ {row['error_message'][:80]}"
         lines.append(
-            f"{icon} `{created}` – {row['status']} "
+            f"{icon} `{created}` - {row['status']} "
             f"(attempts: {row['attempt_count']})"
             f"{error_snippet}"
         )

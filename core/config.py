@@ -90,7 +90,7 @@ class Settings(BaseSettings):
     # ─────────────────────────────────────────────────────────────────────────
 
     @model_validator(mode="after")
-    def block_test_keys_in_production(self) -> "Settings":
+    def block_test_keys_in_production(self) -> Settings:
         """
         Prevent sandbox/test keys from being used in a production environment.
 
@@ -136,5 +136,5 @@ def get_settings() -> Settings:
     return Settings()
 
 
-# Module-level singleton – most modules just do ``from core.config import settings``
+# Module-level singleton - most modules just do ``from core.config import settings``
 settings: Annotated[Settings, "Cached application settings"] = get_settings()

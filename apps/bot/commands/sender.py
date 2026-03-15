@@ -5,18 +5,18 @@ Telegram bot commands for managing sender email accounts.
 
 Commands
 --------
-/senders         – List all configured sender emails with status.
-/testsender <e>  – Send a test email from the specified sender address.
-/removesender    – Interactive prompt to remove a sender.
+/senders         - List all configured sender emails with status.
+/testsender <e>  - Send a test email from the specified sender address.
+/removesender    - Interactive prompt to remove a sender.
 """
 
 from __future__ import annotations
 
 import logging
+from email.mime.text import MIMEText
 from typing import Any
 
 import aiosmtplib
-from email.mime.text import MIMEText
 from telegram import Update
 from telegram.ext import ContextTypes
 
@@ -29,7 +29,7 @@ logger = logging.getLogger(__name__)
 
 async def cmd_senders(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """
-    /senders – List all sender emails stored in the database.
+    /senders - List all sender emails stored in the database.
 
     Displays email address, provider, daily limit, verified and active status.
     """
@@ -39,7 +39,8 @@ async def cmd_senders(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
     supabase = await get_client()
     try:
         response = await supabase.table("sender_emails").select(
-            "email_address, display_name, provider, daily_limit, is_verified, is_active, last_used_at"
+            "email_address, display_name, provider, daily_limit, "
+            "is_verified, is_active, last_used_at"
         ).order("created_at").execute()
     except Exception as exc:
         logger.error("Failed to fetch senders: %s", exc)
@@ -72,7 +73,7 @@ async def cmd_senders(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
 
 async def cmd_test_sender(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """
-    /testsender <email> – Send a test email through the specified sender.
+    /testsender <email> - Send a test email through the specified sender.
 
     Args passed via ``context.args[0]``: the sender's email address.
     """
@@ -84,7 +85,10 @@ async def cmd_test_sender(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
         return
 
     target_email: str = context.args[0].strip().lower()
-    await update.message.reply_text(f"⏳ Sending test email from `{target_email}`…", parse_mode="Markdown")
+    await update.message.reply_text(
+        f"⏳ Sending test email from `{target_email}`…",
+        parse_mode="Markdown",
+    )
 
     supabase = await get_client()
     try:
@@ -120,7 +124,7 @@ async def cmd_test_sender(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
         "plain",
         "utf-8",
     )
-    msg["Subject"] = "MailGuard – Sender Test"
+    msg["Subject"] = "MailGuard - Sender Test"
     msg["From"] = sender["email_address"]
     msg["To"] = sender["email_address"]  # Send test to self
 
@@ -142,7 +146,8 @@ async def cmd_test_sender(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
             .execute()
         )
         await update.message.reply_text(
-            f"✅ Test email sent successfully from `{target_email}`!\nSender is now marked as verified.",
+            f"✅ Test email sent successfully from `{target_email}`!\n"
+            "Sender is now marked as verified.",
             parse_mode="Markdown",
         )
     except Exception as exc:
@@ -155,7 +160,7 @@ async def cmd_test_sender(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
 
 async def cmd_remove_sender(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """
-    /removesender <email> – Remove a sender email from the database.
+    /removesender <email> - Remove a sender email from the database.
 
     This deactivates the sender rather than hard-deleting so historical
     ``email_logs`` records are not orphaned.
