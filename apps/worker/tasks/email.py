@@ -23,13 +23,13 @@ from __future__ import annotations
 
 import asyncio
 import logging
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from typing import Any
 
 import aiosmtplib
-from jinja2 import Environment, StrictUndefined, Template
+from jinja2 import Environment, StrictUndefined
 from telegram import Bot
 
 from core.config import settings
@@ -96,7 +96,7 @@ async def send_email_task(
         .execute()
     )
     if not project_resp.data:
-        logger.error("Project %s not found – aborting email task", project_id)
+        logger.error("Project %s not found - aborting email task", project_id)
         return {"status": "error", "reason": "project_not_found"}
 
     project: dict[str, Any] = project_resp.data[0]
@@ -138,10 +138,14 @@ async def send_email_task(
     # Validate otp_format to prevent unexpected autoescape=False fallthrough
     otp_format: str = raw_format if raw_format in ("text", "html") else "text"
     if raw_format not in ("text", "html"):
-        logger.warning("Unknown otp_format %r for project %s; defaulting to 'text'", raw_format, project_id)
+        logger.warning(
+            "Unknown otp_format %r for project %s; defaulting to 'text'",
+            raw_format,
+            project_id,
+        )
 
     # Autoescape is enabled for HTML to prevent XSS; disabled for plain text
-    jinja_env = Environment(autoescape=(otp_format == "html"), undefined=StrictUndefined)  # noqa: S701
+    jinja_env = Environment(autoescape=(otp_format == "html"), undefined=StrictUndefined)
 
     try:
         subject: str = jinja_env.from_string(subject_tmpl_str).render(otp=otp)
@@ -192,7 +196,7 @@ async def send_email_task(
             # ── Update sender last_used_at ────────────────────────────────────
             await (
                 supabase.table("sender_emails")
-                .update({"last_used_at": datetime.now(tz=timezone.utc).isoformat()})
+                .update({"last_used_at": datetime.now(tz=UTC).isoformat()})
                 .eq("id", sender["id"])
                 .execute()
             )
@@ -235,7 +239,7 @@ async def _log_success(
     recipient_email: str,
 ) -> None:
     """Insert a success entry into email_logs."""
-    from core.otp import hmac_email  # noqa: PLC0415 – avoid circular import at module level
+    from core.otp import hmac_email
 
     try:
         await supabase.table("email_logs").insert(
@@ -245,7 +249,7 @@ async def _log_success(
                 "recipient_email_hash": hmac_email(recipient_email),
                 "status": "sent",
                 "attempt_count": 1,
-                "sent_at": datetime.now(tz=timezone.utc).isoformat(),
+                "sent_at": datetime.now(tz=UTC).isoformat(),
             }
         ).execute()
     except Exception as exc:
@@ -261,7 +265,7 @@ async def _log_failure(
     attempt_count: int = 1,
 ) -> None:
     """Insert a failure entry into email_logs."""
-    from core.otp import hmac_email  # noqa: PLC0415
+    from core.otp import hmac_email
 
     try:
         await supabase.table("email_logs").insert(

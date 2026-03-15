@@ -21,10 +21,10 @@ from __future__ import annotations
 
 import logging
 import re
+from email.mime.text import MIMEText
 from typing import Any
 
 import aiosmtplib
-from email.mime.text import MIMEText
 from telegram import ReplyKeyboardMarkup, ReplyKeyboardRemove, Update
 from telegram.ext import (
     CommandHandler,
@@ -63,7 +63,7 @@ _EMAIL_RE = re.compile(r"^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$")
 
 
 async def start_add_email(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    """/addemail – Begin the add-email wizard."""
+    """/addemail - Begin the add-email wizard."""
     if not await check_admin(update, context):
         return ConversationHandler.END
 
@@ -92,7 +92,7 @@ async def got_email(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     context.user_data["email"] = email
     await update.message.reply_text(
         f"✅ Email: `{email}`\n\n"
-        "📧 *Step 2/4* – Enter the SMTP **app password** for this address.\n"
+        "📧 *Step 2/4* - Enter the SMTP **app password** for this address.\n"
         "⚠️ _Your message will be deleted immediately after processing._\n\n"
         "For Gmail, generate an app password at: myaccount.google.com → Security → App passwords",
         parse_mode="Markdown",
@@ -122,7 +122,7 @@ async def got_password(update: Update, context: ContextTypes.DEFAULT_TYPE) -> in
     provider_keyboard = [["gmail", "outlook"], ["zoho", "other"]]
     await update.message.reply_text(
         "✅ Password received and secured.\n\n"
-        "📧 *Step 3/4* – Which SMTP provider does this address use?",
+        "📧 *Step 3/4* - Which SMTP provider does this address use?",
         parse_mode="Markdown",
         reply_markup=ReplyKeyboardMarkup(
             provider_keyboard,
@@ -147,7 +147,7 @@ async def got_provider(update: Update, context: ContextTypes.DEFAULT_TYPE) -> in
 
     if provider == "other":
         await update.message.reply_text(
-            "📧 *Step 3b/4* – Enter the SMTP host and port separated by a space:\n"
+            "📧 *Step 3b/4* - Enter the SMTP host and port separated by a space:\n"
             "_e.g. smtp.fastmail.com 587_",
             parse_mode="Markdown",
             reply_markup=ReplyKeyboardRemove(),
@@ -191,7 +191,7 @@ async def _show_confirm(update: Update, context: ContextTypes.DEFAULT_TYPE) -> i
     """Show a summary and ask for confirmation before saving."""
     d = context.user_data
     await update.message.reply_text(
-        "📧 *Step 4/4 – Confirm*\n\n"
+        "📧 *Step 4/4 - Confirm*\n\n"
         f"Email: `{d['email']}`\n"
         f"Provider: {d['provider']}\n"
         f"SMTP: `{d['smtp_host']}:{d['smtp_port']}`\n\n"
@@ -260,7 +260,7 @@ async def got_confirm(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int
         "plain",
         "utf-8",
     )
-    msg["Subject"] = "MailGuard – Sender Verified ✅"
+    msg["Subject"] = "MailGuard - Sender Verified ✅"
     msg["From"] = d["email"]
     msg["To"] = d["email"]
 

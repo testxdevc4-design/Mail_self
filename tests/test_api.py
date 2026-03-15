@@ -16,13 +16,12 @@ from httpx import ASGITransport, AsyncClient
 
 from apps.api.main import app
 
-
 # ─────────────────────────────────────────────────────────────────────────────
 # Helpers
 # ─────────────────────────────────────────────────────────────────────────────
 
 
-def _make_supabase_mock(data: list = None):
+def _make_supabase_mock(data: list | None = None):
     """Return a Supabase mock whose .execute() returns *data*."""
     if data is None:
         data = []
@@ -55,7 +54,7 @@ def _make_redis_mock():
     pipe.zcard = AsyncMock()
     pipe.zadd = AsyncMock()
     pipe.expire = AsyncMock()
-    # Second element (index 1) is the cardinality – return 0 so rate limit is not triggered
+    # Second element (index 1) is the cardinality - return 0 so rate limit is not triggered
     pipe.execute = AsyncMock(return_value=[0, 0, 1, True])
     redis.pipeline = MagicMock(return_value=pipe)
     return redis
@@ -177,13 +176,14 @@ async def test_otp_send_invalid_email():
     app.state.redis = redis_mock
 
     # Second call (project lookup) returns the project
-    project_execute = AsyncMock(return_value=MagicMock(data=[_valid_project()]))
-    key_supabase.table.return_value.select.return_value.eq.return_value.limit.return_value.execute = (
-        AsyncMock(side_effect=[
-            MagicMock(data=[_valid_key_row()]),
-            MagicMock(data=[_valid_project()]),
-        ])
+    execute_chain = (
+        key_supabase.table.return_value.select.return_value
+        .eq.return_value.limit.return_value
     )
+    execute_chain.execute = AsyncMock(side_effect=[
+        MagicMock(data=[_valid_key_row()]),
+        MagicMock(data=[_valid_project()]),
+    ])
 
     with patch("apps.api.middleware.api_key.get_client", AsyncMock(return_value=key_supabase)):
         transport = ASGITransport(app=app)
@@ -226,7 +226,11 @@ async def test_otp_verify_invalid_code_format():
         MagicMock(data=[_valid_key_row()]),   # key lookup
         MagicMock(data=[_valid_project()]),    # project lookup
     ])
-    key_supabase.table.return_value.select.return_value.eq.return_value.limit.return_value.execute = project_execute
+    execute_chain = (
+        key_supabase.table.return_value.select.return_value
+        .eq.return_value.limit.return_value
+    )
+    execute_chain.execute = project_execute
 
     with patch("apps.api.middleware.api_key.get_client", new=AsyncMock(return_value=key_supabase)):
         transport = ASGITransport(app=app)
@@ -244,7 +248,6 @@ async def test_otp_verify_invalid_code_format():
 @pytest.mark.asyncio
 async def test_otp_verify_no_record():
     """POST /api/v1/otp/verify when no OTP exists returns 410."""
-    from core.otp import hash_otp
 
     key_supabase = _make_supabase_mock()
 

@@ -5,7 +5,7 @@ OTP generation, hashing and verification utilities.
 
 Security design decisions
 --------------------------
-* ``secrets.randbelow`` is a CSPRNG – never use ``random`` for OTPs.
+* ``secrets.randbelow`` is a CSPRNG - never use ``random`` for OTPs.
 * bcrypt cost factor 10 is the OWASP recommended minimum for password hashing;
   we re-use the same approach for OTP hashes so a leaked DB row cannot be
   brute-forced efficiently.
@@ -23,7 +23,6 @@ import secrets
 import bcrypt
 
 from core.config import settings
-
 
 # ── Constants ─────────────────────────────────────────────────────────────────
 _BCRYPT_ROUNDS: int = 10
@@ -91,7 +90,7 @@ def verify_otp(otp: str, hashed: str) -> bool:
     """
     try:
         return bcrypt.checkpw(otp.encode("utf-8"), hashed.encode("utf-8"))
-    except Exception:  # noqa: BLE001 – bcrypt can raise on malformed hashes
+    except Exception:
         return False
 
 
@@ -146,7 +145,7 @@ def mask_email(email: str) -> str:
     try:
         local, domain = email.rsplit("@", 1)
     except ValueError:
-        # Not a valid e-mail shape – return a fully redacted string
+        # Not a valid e-mail shape - return a fully redacted string
         return "***@***"
 
     visible: int = max(1, min(2, len(local) - 1))

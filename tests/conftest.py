@@ -11,10 +11,9 @@ are required during CI.
 from __future__ import annotations
 
 import os
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock, MagicMock
 
 import pytest
-
 
 # ── Set required environment variables BEFORE any core module is imported ──────
 # These must be set at collection time, hence the module-level os.environ calls.

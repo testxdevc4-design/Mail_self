@@ -4,7 +4,7 @@ core/crypto.py
 AES-256-GCM authenticated encryption helpers.
 
 Each call to ``encrypt`` produces a fresh 12-byte random IV, so encrypting
-the same plaintext twice yields different ciphertext – this is intentional.
+the same plaintext twice yields different ciphertext - this is intentional.
 
 Wire format (hex-encoded):
     <12-byte IV (24 hex chars)><ciphertext + 16-byte auth-tag (variable len)>

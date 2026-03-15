@@ -20,7 +20,7 @@ removed.  In practice windows are small so N and M are tiny.
 
 Thread-safety: all three Redis commands are issued in a single pipeline
 (no MULTI/EXEC needed because we only need eventual consistency for rate
-limiting – a tiny race window is acceptable and far better than a blocking
+limiting - a tiny race window is acceptable and far better than a blocking
 Lua script for this use-case).
 """
 
@@ -49,8 +49,8 @@ async def check_rate_limit(
         window_seconds: Length of the sliding window in seconds.
 
     Returns:
-        ``True``  – request is **allowed** (counter incremented).
-        ``False`` – request is **denied** (limit exceeded).
+        ``True``  - request is **allowed** (counter incremented).
+        ``False`` - request is **denied** (limit exceeded).
 
     Example::
 

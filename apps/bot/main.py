@@ -12,22 +12,22 @@ Start the bot:
 
 Commands registered
 -------------------
-/start          – Show help message.
-/help           – Show the full command reference.
-/senders        – List sender emails.
-/addemail       – Add sender email (wizard).
-/testsender     – Test a sender email.
-/removesender   – Deactivate a sender email.
-/projects       – List projects.
-/newproject     – Create a project (wizard).
-/assignsender   – Assign sender to project.
-/setotp         – Update OTP config.
-/genkey         – Generate an API key.
-/keys           – List API keys for project.
-/revokekey      – Revoke an API key.
-/testkey        – Validate an API key.
-/logs           – View email delivery logs.
-/cancel         – Cancel current wizard.
+/start          - Show help message.
+/help           - Show the full command reference.
+/senders        - List sender emails.
+/addemail       - Add sender email (wizard).
+/testsender     - Test a sender email.
+/removesender   - Deactivate a sender email.
+/projects       - List projects.
+/newproject     - Create a project (wizard).
+/assignsender   - Assign sender to project.
+/setotp         - Update OTP config.
+/genkey         - Generate an API key.
+/keys           - List API keys for project.
+/revokekey      - Revoke an API key.
+/testkey        - Validate an API key.
+/logs           - View email delivery logs.
+/cancel         - Cancel current wizard.
 """
 
 from __future__ import annotations
@@ -56,7 +56,7 @@ from apps.bot.wizards.new_project import build_new_project_handler
 from core.config import settings
 
 logging.basicConfig(
-    format="%(asctime)s [%(levelname)s] %(name)s – %(message)s",
+    format="%(asctime)s [%(levelname)s] %(name)s - %(message)s",
     level=logging.INFO,
 )
 logger = logging.getLogger(__name__)
@@ -65,33 +65,33 @@ _HELP_TEXT = """
 *MailGuard Admin Bot*
 
 *Sender Management*
-/senders – List all senders
-/addemail – Add a sender (wizard)
-/testsender <email> – Test a sender
-/removesender <email> – Deactivate a sender
+/senders - List all senders
+/addemail - Add a sender (wizard)
+/testsender <email> - Test a sender
+/removesender <email> - Deactivate a sender
 
 *Project Management*
-/projects – List all projects
-/newproject – Create a project (wizard)
-/assignsender <slug> <email> – Assign sender
-/setotp <slug> <len> <expiry> <max\\_attempts> – Update OTP config
+/projects - List all projects
+/newproject - Create a project (wizard)
+/assignsender <slug> <email> - Assign sender
+/setotp <slug> <len> <expiry> <max\\_attempts> - Update OTP config
 
 *API Key Management*
-/genkey <slug> [--sandbox] – Generate API key
-/keys <slug> – List keys for a project
-/revokekey <prefix> – Revoke a key
-/testkey <key> – Validate a key
+/genkey <slug> [--sandbox] - Generate API key
+/keys <slug> - List keys for a project
+/revokekey <prefix> - Revoke a key
+/testkey <key> - Validate a key
 
 *Logs*
-/logs – Recent logs
-/logs <slug> – Logs for a project
-/logs --failed – Failed deliveries
-/logs --today – Today's logs
+/logs - Recent logs
+/logs <slug> - Logs for a project
+/logs --failed - Failed deliveries
+/logs --today - Today's logs
 """
 
 
 async def cmd_start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Handle /start – show a welcome message."""
+    """Handle /start - show a welcome message."""
     if not await check_admin(update, context):
         return
     await update.message.reply_text(
@@ -102,7 +102,7 @@ async def cmd_start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
 
 async def cmd_help(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Handle /help – show the command reference."""
+    """Handle /help - show the command reference."""
     if not await check_admin(update, context):
         return
     await update.message.reply_text(_HELP_TEXT, parse_mode="Markdown")

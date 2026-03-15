@@ -23,15 +23,15 @@ select = [
 
 ignore = [
     "S101",   # assert statements (used in tests)
-    "ANN101", # self annotation
-    "ANN102", # cls annotation
     "ANN401", # Dynamically typed expressions (Any) are disallowed
     "B008",   # Do not perform function calls in default arguments (FastAPI Depends)
-    "S701",   # Jinja2 autoescape – we handle this explicitly in the worker task
+    "S701",   # Jinja2 autoescape - we handle this explicitly in the worker task
+    "BLE001", # blind Exception catches are intentional for resilience in DB/SMTP/bot ops
+    "S110",   # try-except-pass used for non-critical fire-and-forget operations
 ]
 
 [lint.per-file-ignores]
-"tests/*" = ["S101", "ANN", "PLW"]
+"tests/*" = ["S101", "ANN", "PLW", "PLC"]
 "apps/bot/*" = ["ANN"]   # PTB handlers have complex type signatures
 
 [lint.isort]

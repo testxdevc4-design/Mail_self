@@ -48,7 +48,7 @@ async def health_check(request: Request) -> JSONResponse:
         # A lightweight query that exercises the connection without reading data
         await supabase.table("projects").select("id").limit(1).execute()
     except Exception as exc:
-        logger.warning("Health check: Supabase unreachable – %s", exc)
+        logger.warning("Health check: Supabase unreachable - %s", exc)
         checks["supabase"] = f"error: {type(exc).__name__}"
         all_ok = False
 
@@ -57,7 +57,7 @@ async def health_check(request: Request) -> JSONResponse:
         redis = request.app.state.redis
         await redis.ping()
     except Exception as exc:
-        logger.warning("Health check: Redis unreachable – %s", exc)
+        logger.warning("Health check: Redis unreachable - %s", exc)
         checks["redis"] = f"error: {type(exc).__name__}"
         all_ok = False
 

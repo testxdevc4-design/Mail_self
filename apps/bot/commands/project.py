@@ -5,9 +5,9 @@ Telegram bot commands for managing projects.
 
 Commands
 --------
-/projects             – List all projects with configuration summary.
-/assignsender         – Assign a sender email to a project.
-/setotp               – Update OTP configuration for a project.
+/projects             - List all projects with configuration summary.
+/assignsender         - Assign a sender email to a project.
+/setotp               - Update OTP configuration for a project.
 """
 
 from __future__ import annotations
@@ -26,7 +26,7 @@ logger = logging.getLogger(__name__)
 
 async def cmd_projects(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """
-    /projects – List all projects with their OTP and sender configuration.
+    /projects - List all projects with their OTP and sender configuration.
     """
     if not await check_admin(update, context):
         return
@@ -67,7 +67,7 @@ async def cmd_projects(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
 
 async def cmd_assign_sender(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """
-    /assignsender <project_slug> <sender_email> – Assign a sender to a project.
+    /assignsender <project_slug> <sender_email> - Assign a sender to a project.
     """
     if not await check_admin(update, context):
         return
@@ -99,7 +99,10 @@ async def cmd_assign_sender(update: Update, context: ContextTypes.DEFAULT_TYPE) 
         return
 
     if not proj_resp.data:
-        await update.message.reply_text(f"❌ Project `{project_slug}` not found.", parse_mode="Markdown")
+        await update.message.reply_text(
+            f"❌ Project `{project_slug}` not found.",
+            parse_mode="Markdown",
+        )
         return
 
     project: dict[str, Any] = proj_resp.data[0]
@@ -153,7 +156,7 @@ async def cmd_assign_sender(update: Update, context: ContextTypes.DEFAULT_TYPE) 
 async def cmd_set_otp(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """
     /setotp <project_slug> <length> <expiry_seconds> <max_attempts>
-    – Update OTP settings for a project.
+    - Update OTP settings for a project.
 
     Example: /setotp myapp 6 600 5
     """
@@ -203,7 +206,10 @@ async def cmd_set_otp(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
         return
 
     if not proj_resp.data:
-        await update.message.reply_text(f"❌ Project `{project_slug}` not found.", parse_mode="Markdown")
+        await update.message.reply_text(
+            f"❌ Project `{project_slug}` not found.",
+            parse_mode="Markdown",
+        )
         return
 
     project: dict[str, Any] = proj_resp.data[0]

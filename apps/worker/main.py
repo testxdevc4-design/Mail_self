@@ -18,16 +18,16 @@ Design decisions
 from __future__ import annotations
 
 import logging
-import os
+from typing import ClassVar
 
 from arq.connections import RedisSettings
 
-from apps.worker.tasks.email import send_email_task  # noqa: F401 – re-exported for ARQ
+from apps.worker.tasks.email import send_email_task
 from core.config import settings
 
 logging.basicConfig(
     level=logging.INFO,
-    format="%(asctime)s [%(levelname)s] %(name)s – %(message)s",
+    format="%(asctime)s [%(levelname)s] %(name)s - %(message)s",
 )
 logger = logging.getLogger(__name__)
 
@@ -46,7 +46,7 @@ class WorkerSettings:
     """
 
     # ── Queue functions ────────────────────────────────────────────────────────
-    functions = [send_email_task]
+    functions: ClassVar[list] = [send_email_task]
 
     # ── Redis connection ───────────────────────────────────────────────────────
     redis_settings: RedisSettings = _redis_settings()

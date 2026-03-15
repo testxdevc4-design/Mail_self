@@ -20,8 +20,9 @@ from __future__ import annotations
 
 import logging
 import uuid
+from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
-from typing import AsyncGenerator
+from typing import Any
 
 import redis.asyncio as aioredis
 from fastapi import FastAPI, Request, Response
@@ -116,7 +117,7 @@ def create_app() -> FastAPI:
     secure_headers = Secure()
 
     @_app.middleware("http")
-    async def add_secure_headers(request: Request, call_next) -> Response:  # type: ignore[misc]
+    async def add_secure_headers(request: Request, call_next: Any) -> Response:  # type: ignore[misc]
         response: Response = await call_next(request)
         for header_name, header_value in secure_headers.headers().items():
             response.headers[header_name] = header_value
@@ -124,7 +125,7 @@ def create_app() -> FastAPI:
 
     # ── Request-ID middleware ─────────────────────────────────────────────────
     @_app.middleware("http")
-    async def add_request_id(request: Request, call_next) -> Response:  # type: ignore[misc]
+    async def add_request_id(request: Request, call_next: Any) -> Response:  # type: ignore[misc]
         request_id: str = request.headers.get("X-Request-ID", str(uuid.uuid4()))
         response: Response = await call_next(request)
         response.headers["X-Request-ID"] = request_id

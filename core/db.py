@@ -3,7 +3,7 @@ core/db.py
 ==========
 Supabase client singleton.
 
-Uses the *service-role* key which bypasses Row Level Security – this is
+Uses the *service-role* key which bypasses Row Level Security - this is
 intentional because all business logic enforces its own authorisation.
 
 Import pattern::
@@ -17,7 +17,7 @@ from supabase import AsyncClient, acreate_client
 
 from core.config import settings
 
-# Module-level reference – populated lazily via ``get_client()``
+# Module-level reference - populated lazily via ``get_client()``
 _client: AsyncClient | None = None
 
 
@@ -28,7 +28,7 @@ async def get_client() -> AsyncClient:
     All three services (api, worker, bot) call this function; the ``global``
     assignment means only one client exists per process.
     """
-    global _client  # noqa: PLW0603 – intentional module-level singleton
+    global _client  # noqa: PLW0603 - intentional module-level singleton
     if _client is None:
         _client = await acreate_client(
             settings.SUPABASE_URL,
