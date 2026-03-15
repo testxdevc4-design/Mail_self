@@ -31,6 +31,9 @@ from core.db import get_client
 logger = logging.getLogger(__name__)
 
 _bearer_scheme = HTTPBearer(auto_error=False)
+
+# Module-level set to prevent garbage collection of fire-and-forget asyncio tasks.
+# Tasks are added here and automatically removed via done callbacks.
 _background_tasks: set[Any] = set()
 
 
